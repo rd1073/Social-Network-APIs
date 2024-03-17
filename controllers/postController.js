@@ -97,36 +97,34 @@ const getPostById = async (req, res) => {
     }
   };
   
-
-// Update a post
+ 
+  // Update a post
 const updatePost = async (req, res) => {
-  try {
-    const postId = req.body;
-    const { content } = req.body;
-    const userId = req.user.id ;// Assuming user ID is stored in req.user.id
-    if(!userId){
+    try {
+      const { postId, content } = req.body; // Extract postId and content from req.body
+      const userId = req.user.id; // Assuming user ID is stored in req.user.id
+  
+      if (!userId) {
         return res.status(404).json({ msg: "User not found" });
-          
-
+      }
+  
+      const updatedPost = await Post.findByIdAndUpdate(
+        postId,
+        { content },
+        { new: true }
+      );
+  
+      if (!updatedPost) {
+        return res.status(404).json({ msg: "Post not found" });
+      }
+  
+      res.status(200).json(updatedPost);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ msg: "Server error" });
     }
-
-
-    const updatedPost = await Post.findByIdAndUpdate(
-      postId,
-      { text },
-      { new: true }
-    );
-
-    if (!updatedPost) {
-      return res.status(404).json({ msg: "Post not found" });
-    }
-
-    res.status(200).json(updatedPost);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: "Server error" });
-  }
-};
+  };
+  
 
 // Delete a post
 const deletePost = async (req, res) => {
